@@ -5,15 +5,20 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -21,20 +26,25 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
 
-public class MainForm implements ItemListener{
-	String switchArr[]= {"BUTTONPANEL","TEXTPANEL"};
+public class MainForm implements ItemListener {
+	String switchArr[] = { "BUTTONPANEL", "TEXTPANEL" };
 	JFrame frame = new JFrame("TopLevelDemo");
 	JMenuBar greenMenuBar = new JMenuBar();
 	CardLayout cl = new CardLayout();
-	JPanel cards = new JPanel();	
+	JPanel cards = new JPanel();
 	JComboBox cb = new JComboBox(switchArr);
+	JPanel panelBody = new JPanel();
+	JButton buttonImg = new JButton();
+	JLabel lbl1 = new JLabel("Label 1");
+	JPanel pnl = new JPanel();
 	
-	public MainForm()  {
-		
+
+	public MainForm() {
+
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		
 		greenMenuBar.setOpaque(true);
 		greenMenuBar.setBackground(new Color(255, 0, 0));
 		greenMenuBar.setPreferredSize(new Dimension(400, 20));
@@ -60,7 +70,6 @@ public class MainForm implements ItemListener{
 		JButton btnOne = new JButton("switch to 2");
 		JButton btnSecond = new JButton("switch to 1");
 
-	
 		cards.setLayout(cl);
 
 		BUTTONPANEL.add(btnOne);
@@ -71,10 +80,28 @@ public class MainForm implements ItemListener{
 
 		BUTTONPANEL.setBackground(Color.blue);
 		TEXTPANEL.setBackground(Color.YELLOW);
-		
 
-		
-		
+		try {
+			Image img = ImageIO.read(getClass().getResource("plus.PNG"));
+			buttonImg.setIcon(new ImageIcon(img));
+			buttonImg.setBackground(Color.BLUE);
+		} catch (Exception ex) {
+			System.out.println(ex);
+		}
+
+		buttonImg.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JButton buttonImg2 = new JButton();
+				cloneIt(buttonImg2, buttonImg);	
+				panelBody.add(buttonImg2);
+				panelBody.add(buttonImg2);
+				panelBody.revalidate();
+				panelBody.repaint();
+
+			}
+		});
 
 		cl.show(cards, "BUTTONPANEL");
 
@@ -85,6 +112,7 @@ public class MainForm implements ItemListener{
 				// TODO Auto-generated method stub
 				cl.show(cards, "TEXTPANEL");
 				cb.setSelectedIndex(1);
+
 			}
 		});
 
@@ -97,25 +125,21 @@ public class MainForm implements ItemListener{
 				cb.setSelectedIndex(0);
 			}
 		});
-		
-		cb.addItemListener(this); 		
-		
+
+		cb.addItemListener(this);
 
 		JLabel yellowLabel = new JLabel();
 		yellowLabel.setOpaque(true);
 		yellowLabel.setBackground(new Color(0, 255, 0));
 		yellowLabel.setPreferredSize(new Dimension(200, 409));
-		
-		
 
-		
-		
-		JPanel panelBody = new JPanel();
 		panelBody.add(yellowLabel);
 		panelBody.add(Box.createGlue());
 		panelBody.add(cards);
 		panelBody.add(Box.createGlue());
 		panelBody.add(cb);
+		panelBody.add(Box.createGlue());
+		panelBody.add(buttonImg);
 
 		// right
 		JButton btnAdd = new JButton("Add me");
@@ -183,7 +207,7 @@ public class MainForm implements ItemListener{
 		panelFooter.add(btn2);
 
 		// add item to frame
-		frame.setJMenuBar(greenMenuBar);	
+		frame.setJMenuBar(greenMenuBar);
 		frame.add(panelBody);
 		frame.add(panel, BorderLayout.EAST);
 		frame.add(grid, BorderLayout.WEST);
@@ -194,19 +218,26 @@ public class MainForm implements ItemListener{
 
 	}
 
+	public void cloneIt(JComponent newComp, JComponent oldComp) {
+		newComp.setPreferredSize(oldComp.getPreferredSize());
+		newComp.setBackground(oldComp.getBackground());
+		newComp.setOpaque(oldComp.isOpaque());
+		newComp.setBorder(oldComp.getBorder());
+
+	}
+
 	@Override
 	public void itemStateChanged(ItemEvent event) {
-		 if (event.getStateChange() == ItemEvent.SELECTED) {
-	          Object item = event.getItem();
-	          if(item =="TEXTPANEL") {	        	
-	        		  cl.show(cards, "TEXTPANEL");
-	          }
-	          else {
-	        		cl.show(cards, "BUTTONPANEL");
-	          }
-	          
-	       }
-		
+		if (event.getStateChange() == ItemEvent.SELECTED) {
+			Object item = event.getItem();
+			if (item == "TEXTPANEL") {
+				cl.show(cards, "TEXTPANEL");
+			} else {
+				cl.show(cards, "BUTTONPANEL");
+			}
+
+		}
+
 	}
 
 }
