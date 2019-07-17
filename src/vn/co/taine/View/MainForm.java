@@ -39,7 +39,7 @@ public class MainForm implements ItemListener {
 	JButton buttonImg = new JButton();
 	JLabel lbl1 = new JLabel("Label 1");
 	JPanel pnl = new JPanel();
-	
+	JButton current = buttonImg;
 
 	public MainForm() {
 
@@ -80,23 +80,21 @@ public class MainForm implements ItemListener {
 
 		BUTTONPANEL.setBackground(Color.blue);
 		TEXTPANEL.setBackground(Color.YELLOW);
-
-		try {
-			Image img = ImageIO.read(getClass().getResource("plus.PNG"));
-			buttonImg.setIcon(new ImageIcon(img));
-			buttonImg.setBackground(Color.BLUE);
-		} catch (Exception ex) {
-			System.out.println(ex);
-		}
+		
+		addImageForButton(buttonImg,"plus.PNG");
+	
 
 		buttonImg.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JButton buttonImg2 = new JButton();
-				cloneIt(buttonImg2, buttonImg);	
-				panelBody.add(buttonImg2);
-				panelBody.add(buttonImg2);
+				cloneIt(buttonImg2, current);				
+				addImageForButton(current,"minus.PNG");
+				addImageForButton(buttonImg2,"plus.PNG");
+				
+				panelBody.add(Box.createVerticalGlue());
+				panelBody.add(buttonImg2);		
 				panelBody.revalidate();
 				panelBody.repaint();
 
@@ -238,6 +236,15 @@ public class MainForm implements ItemListener {
 
 		}
 
+	}
+	
+	public void addImageForButton(JButton buttonImg,String imgSrc) {
+		try {
+			Image img = ImageIO.read(getClass().getResource(imgSrc));
+			buttonImg.setIcon(new ImageIcon(img));		
+		} catch (Exception ex) {
+			System.out.println(ex);
+		}
 	}
 
 }
