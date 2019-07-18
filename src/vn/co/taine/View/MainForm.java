@@ -3,6 +3,7 @@ package vn.co.taine.View;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -10,8 +11,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -27,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import java.util.UUID;
 
 public class MainForm implements ItemListener {
 	String switchArr[] = { "BUTTONPANEL", "TEXTPANEL" };
@@ -40,6 +47,35 @@ public class MainForm implements ItemListener {
 	JLabel lbl1 = new JLabel("Label 1");
 	JPanel pnl = new JPanel();
 	JButton current = buttonImg;
+
+	ActionListener plusActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent actionEvent) {
+			JButton buttonImg2 = new JButton();
+			cloneIt(buttonImg2, current);
+			addImageForButton(current, "minus.PNG");
+			current.addActionListener(minusActionListener);
+			current.removeActionListener(plusActionListener);
+			current = buttonImg2;	
+			current.addActionListener(plusActionListener);
+			addImageForButton(buttonImg2, "plus.PNG");
+			panelBody.add(Box.createVerticalGlue());
+			panelBody.add(buttonImg2);
+
+			panelBody.revalidate();
+			panelBody.repaint();
+		}
+	};
+
+	ActionListener minusActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent actionEvent) {
+			actionEvent.getSource();
+			JButton button = (JButton) actionEvent.getSource(); // danger when casting!
+			Container parent = button.getParent();
+			parent.remove(button);
+			panelBody.revalidate();
+			panelBody.repaint();
+		}
+	};
 
 	public MainForm() {
 
@@ -80,26 +116,11 @@ public class MainForm implements ItemListener {
 
 		BUTTONPANEL.setBackground(Color.blue);
 		TEXTPANEL.setBackground(Color.YELLOW);
-		
-		addImageForButton(buttonImg,"plus.PNG");
+
+		addImageForButton(buttonImg, "plus.PNG");
+
+		buttonImg.addActionListener(plusActionListener);
 	
-
-		buttonImg.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				JButton buttonImg2 = new JButton();
-				cloneIt(buttonImg2, current);				
-				addImageForButton(current,"minus.PNG");
-				addImageForButton(buttonImg2,"plus.PNG");
-				
-				panelBody.add(Box.createVerticalGlue());
-				panelBody.add(buttonImg2);		
-				panelBody.revalidate();
-				panelBody.repaint();
-
-			}
-		});
 
 		cl.show(cards, "BUTTONPANEL");
 
@@ -237,14 +258,13 @@ public class MainForm implements ItemListener {
 		}
 
 	}
-	
-	public void addImageForButton(JButton buttonImg,String imgSrc) {
+
+	public void addImageForButton(JButton buttonImg, String imgSrc) {
 		try {
 			Image img = ImageIO.read(getClass().getResource(imgSrc));
-			buttonImg.setIcon(new ImageIcon(img));		
+			buttonImg.setIcon(new ImageIcon(img));
 		} catch (Exception ex) {
 			System.out.println(ex);
 		}
 	}
-
 }
