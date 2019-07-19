@@ -5,6 +5,7 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -37,19 +38,28 @@ import java.util.UUID;
 
 public class MainForm implements ItemListener {
 	String switchArr[] = { "BUTTONPANEL", "TEXTPANEL" };
+	String ruleArr[] = { "%JOB%", "%JOBTPL%" , "%IndexSt%" , "%InputSt%"};
 	JFrame frame = new JFrame("TopLevelDemo");
 	JMenuBar greenMenuBar = new JMenuBar();
 	CardLayout cl = new CardLayout();
 	JPanel cards = new JPanel();
 	JComboBox cb = new JComboBox(switchArr);
+	JComboBox cbFileRule = new JComboBox(ruleArr);
 	JPanel panelBody = new JPanel();
 	JButton buttonImg = new JButton();
-	JLabel lbl1 = new JLabel("Label 1");
-	JPanel pnl = new JPanel();
+	JPanel panelRowRule = new JPanel();
+	JPanel panelFieldSet = new JPanel();
 	JButton current = buttonImg;
 
 	ActionListener plusActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent actionEvent) {
+		
+			JPanel panelCloneRowRule = new JPanel();
+			cloneIt(panelCloneRowRule, panelRowRule);
+			
+			JComboBox cbCloneFileRule = new JComboBox(ruleArr);
+			cloneIt(cbCloneFileRule, cbCloneFileRule);
+			
 			JButton buttonImg2 = new JButton();
 			cloneIt(buttonImg2, current);
 			addImageForButton(current, "minus.PNG");
@@ -58,22 +68,31 @@ public class MainForm implements ItemListener {
 			current = buttonImg2;	
 			current.addActionListener(plusActionListener);
 			addImageForButton(buttonImg2, "plus.PNG");
-			panelBody.add(Box.createVerticalGlue());
-			panelBody.add(buttonImg2);
-
-			panelBody.revalidate();
-			panelBody.repaint();
+			
+			panelCloneRowRule.add(cbCloneFileRule);
+			panelCloneRowRule.add(current);	
+			
+			System.out.println(panelCloneRowRule.getPreferredSize());
+			
+			JButton button = (JButton) actionEvent.getSource(); // danger when casting!
+		
+			Container parent = button.getParent();
+			Container grand = parent.getParent();		
+			
+			grand.add(panelCloneRowRule);			
+			grand.revalidate();
+			grand.repaint();			
 		}
 	};
 
 	ActionListener minusActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent actionEvent) {
-			actionEvent.getSource();
+		public void actionPerformed(ActionEvent actionEvent) {		
 			JButton button = (JButton) actionEvent.getSource(); // danger when casting!
 			Container parent = button.getParent();
-			parent.remove(button);
-			panelBody.revalidate();
-			panelBody.repaint();
+			Container grand = parent.getParent();			
+			grand.remove(parent);
+			grand.revalidate();
+			grand.repaint();
 		}
 	};
 
@@ -147,18 +166,24 @@ public class MainForm implements ItemListener {
 
 		cb.addItemListener(this);
 
-		JLabel yellowLabel = new JLabel();
-		yellowLabel.setOpaque(true);
-		yellowLabel.setBackground(new Color(0, 255, 0));
-		yellowLabel.setPreferredSize(new Dimension(200, 409));
+		panelRowRule.setPreferredSize(new Dimension(590, 50));
+		panelRowRule.add(cbFileRule);
+		panelRowRule.add(buttonImg);
+		panelFieldSet.add(panelRowRule);
+		panelFieldSet.setBorder(BorderFactory.createTitledBorder("File name rule setting:")); 
+		panelFieldSet.setPreferredSize(new Dimension(600, 550));
+		
+		
+		
+		panelBody.add(panelFieldSet);
+		panelBody.add(Box.createGlue());
 
-		panelBody.add(yellowLabel);
 		panelBody.add(Box.createGlue());
 		panelBody.add(cards);
 		panelBody.add(Box.createGlue());
 		panelBody.add(cb);
 		panelBody.add(Box.createGlue());
-		panelBody.add(buttonImg);
+
 
 		// right
 		JButton btnAdd = new JButton("Add me");
@@ -238,6 +263,7 @@ public class MainForm implements ItemListener {
 	}
 
 	public void cloneIt(JComponent newComp, JComponent oldComp) {
+		System.out.println(oldComp.getPreferredSize());
 		newComp.setPreferredSize(oldComp.getPreferredSize());
 		newComp.setBackground(oldComp.getBackground());
 		newComp.setOpaque(oldComp.isOpaque());
